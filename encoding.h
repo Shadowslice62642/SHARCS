@@ -42,8 +42,54 @@ uint64_t encode_perm(uint8_t slots, uint8_t *cubie_p) {
     return coord_p;
 }
 
-uint64_t encode_partial_perm(uint8_t slots, uint8_t break_point, uint8_t *cubie_p){
-    return 0;
+uint64_t* encode_split_perm(uint8_t slots, uint8_t break_point, uint8_t *cubie_p){
+    //calculation (find coordinates)
+    uint64_t coord_p[2];
+    int seen = 0;
+    uint8_t temp = 0;
+    for (int i = 0; i < slots; i++) {
+        if (cubie_p[i] < break_point){
+            temp = slots-cubie_p[i]-1;
+            coord_p[0] += cubie_p[i]-__builtin_popcount(seen >> temp); //pieces-partial_perm[i]-1
+        }
+        else {
+            temp = slots-cubie_p[i]-1;
+            coord_p[1] += cubie_p[i]-__builtin_popcount(seen >> temp); //pieces-partial_perm[i]-1
+        }
+        coord_p[0] *= slots-i-1; //partial factorial thingy
+        coord_p[1] *= slots-i-1; //partial factorial thingy
+        seen += (1 << temp); //record new entry
+        //std::cout << coord_ep << std::endl;
+    }
+    return coord_p;
+}
+
+uint64_t* encode_split_perm(uint8_t pieces, uint8_t slots, uint8_t break_point, uint8_t *cubie_p) {
+    //preprocessing (create partial permutation array)
+    uint8_t partial_perm[12];
+    for (int i = 0; i < slots; i++){
+        if(cubie_p[i] < pieces){
+            partial_perm[cubie_p[i]] = i;
+        }
+    }
+    //calculation (find coordinates)
+    uint64_t coord_p[2];
+    int seen = 0;
+    uint8_t temp = 0;
+    for (int i = 0; i < break_point; i++) {
+        temp = slots-partial_perm[i]-1;
+        coord_p[0] += partial_perm[i]-__builtin_popcount(seen >> temp); //pieces-partial_perm[i]-1
+        coord_p[0] *= slots-i-1; //partial factorial thingy
+        seen += (1 << temp); //record new entry
+    }
+    coord_p[0] /= slots-pieces; //correct for overmultiplication (12Px not 12P(x-1))
+    for (int i = break_point; i < pieces; i++){
+        temp = slots-partial_perm[i]-1;
+        coord_p[0] += partial_perm[i]-__builtin_popcount(seen >> temp); //pieces-partial_perm[i]-1
+        coord_p[0] *= slots-i-1; //partial factorial thingy
+        seen += (1 << temp); //record new entry
+    }
+    return coord_p;
 }
 
 uint64_t encode_ori(uint8_t ori_count, uint8_t slots, uint8_t *cubie_o){

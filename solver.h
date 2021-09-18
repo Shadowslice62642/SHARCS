@@ -1,7 +1,7 @@
 #include <iostream>
 #include "coordMoves.h"
 
-typedef struct step {
+struct Step {
     uint32_t *ep_moves;
     uint16_t *cp_moves;
     uint16_t *eo_moves;

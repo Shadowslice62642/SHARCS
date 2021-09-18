@@ -3,6 +3,8 @@
 #include "cubieMoves.h"
 #include "encoding.h"
 
+//uncomment writing to files when pushing
+
 //cubie move vectors
 //automate assignment?
 typedef uint8_t* (*edgePtr)(uint8_t*);
@@ -47,9 +49,9 @@ void make_ep_table(edgePtr *ep, int moves_length) {
             iteration++;
         }
     }
-    FILE *f;
+    /*FILE *f;
     f = fopen("ep_moves.table", "wb");
-    fwrite(ep_table, 4, 665280*moves_length, f);
+    fwrite(ep_table, 4, 665280*moves_length, f);*/
 }
 
 void make_cp_table(cornPtr *cp, int moves_length) {
@@ -68,9 +70,9 @@ void make_cp_table(cornPtr *cp, int moves_length) {
         }
         std::next_permutation(&corners_p[0], &corners_p[8]);
     }
-    FILE *f;
+    /*FILE *f;
     f = fopen("cp_moves.table", "wb");
-    fwrite(cp_table, 2, 40320*moves_length, f);
+    fwrite(cp_table, 2, 40320*moves_length, f);*/
 }
 
 void make_eo_table(edgePtr *eo, int moves_length) {
@@ -86,9 +88,9 @@ void make_eo_table(edgePtr *eo, int moves_length) {
     }
     delete edges_o;
     delete edges_o_2;
-    FILE *f;
+    /*FILE *f;
     f = fopen("eo_moves.table", "wb");
-    fwrite(eo_table, 2, 2048*moves_length, f);
+    fwrite(eo_table, 2, 2048*moves_length, f);*/
 }
 
 void make_co_table(cornPtr *co, int moves_length) {
@@ -104,9 +106,9 @@ void make_co_table(cornPtr *co, int moves_length) {
     }
     delete corners_o;
     delete corners_o_2;
-    FILE *f;
+    /*FILE *f;
     f = fopen("co_moves.table", "wb");
-    fwrite(co_table, 2, 2187*moves_length, f);
+    fwrite(co_table, 2, 2187*moves_length, f);*/
 }
 
 void make_move_tables(int moves, int moves_length){

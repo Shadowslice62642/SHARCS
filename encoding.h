@@ -32,13 +32,13 @@ uint64_t encode_perm(uint8_t slots, uint8_t *cubie_p) {
     uint64_t coord_p = 0;
     int seen = 0;
     uint8_t temp = 0;
-    for (int i = 0; i < slots; i++) {
+    for (int i = 0; i < slots-1; i++) {
         temp = slots-cubie_p[i]-1;
         coord_p += cubie_p[i]-__builtin_popcount(seen >> temp); //pieces-partial_perm[i]-1
         coord_p *= slots-i-1; //partial factorial thingy
         seen += (1 << temp); //record new entry
-        //std::cout << coord_ep << std::endl;
     }
+    coord_p += cubie_p[slots]-__builtin_popcount(seen >> temp);
     return coord_p;
 }
 
@@ -113,7 +113,7 @@ uint8_t* decode_ori(uint8_t ori_count, uint8_t slots, uint64_t coord_o){
 }
 
 void testing() {
-    uint8_t *cubie_ep = new uint8_t[12];
+    uint8_t cubie_ep[12];
     uint8_t iteration = 6;
     uint64_t hello = 0;
     uint8_t *checked = new uint8_t[665280];
@@ -153,4 +153,3 @@ void testing() {
     }
     std::cout << hello;
 }
-

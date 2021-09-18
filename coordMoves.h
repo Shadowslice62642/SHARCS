@@ -125,12 +125,6 @@ void make_move_tables(int moves, int moves_length){
     edge_ori[3] = &move_L_ori;
     edge_ori[4] = &move_F_ori;
     edge_ori[5] = &move_B_ori;
-    corner_perm[0] = &move_U_perm;
-    corner_perm[1] = &move_D_perm;
-    corner_perm[2] = &move_R_perm;
-    corner_perm[3] = &move_L_perm;
-    corner_perm[4] = &move_F_perm;
-    corner_perm[5] = &move_B_perm;
     ep_table = new uint32_t[665280*moves_length];
     cp_table = new uint16_t[40320*moves_length];
     eo_table = new uint16_t[2048*moves_length];
@@ -143,7 +137,7 @@ void make_move_tables(int moves, int moves_length){
     }
     else {
         std::cout << "Reading edge permutations from file..." << std::endl;
-        fread(ep_table, 4, 3991680, f);
+        fread(ep_table, 4, 665280*moves_length, f);
     }
     f = fopen("cp_moves.table", "rb");
     if (f == NULL){
@@ -152,7 +146,7 @@ void make_move_tables(int moves, int moves_length){
     }
     else {
         std::cout << "Reading corner permutations from file..." << std::endl;
-        fread(cp_table, 2, 241920, f);
+        fread(cp_table, 2, 40320*moves_length, f);
     }
     f = fopen("eo_moves.table", "rb");
     if (f == NULL){
@@ -161,7 +155,7 @@ void make_move_tables(int moves, int moves_length){
     }
     else {
         std::cout << "Reading edge orientations from file..." << std::endl;
-        fread(eo_table, 2, 112288, f);
+        fread(eo_table, 2, 2048*moves_length, f);
     }
     f = fopen("co_moves.table", "rb");
     if (f == NULL){
@@ -170,6 +164,6 @@ void make_move_tables(int moves, int moves_length){
     }
     else {
         std::cout << "Reading corner orientations from file..." << std::endl;
-        fread(co_table, 2, 13122, f);
+        fread(co_table, 2, 2187*moves_length, f);
     }
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdio.h>
+#include <chrono>
 #include "cubieMoves.h"
 #include "encoding.h"
 
@@ -112,6 +113,7 @@ void make_co_table(cornPtr *co, int moves_length) {
 }
 
 void make_move_tables(int moves, int moves_length){
+    auto t1 = std::chrono::high_resolution_clock::now();
     edge_perm = new edgePtr[6];
     edge_ori = new edgePtr[6];
     corner_perm = new cornPtr[6];
@@ -180,5 +182,9 @@ void make_move_tables(int moves, int moves_length){
     else {
         std::cout << "Reading corner orientations from file..." << std::endl;
         fread(co_table, 2, 2187*moves_length, f);
-    }
+    
+    auto t2 = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2-t1);
+    std::cout << std::endl << "Move tables loaded/generated in: " << duration.count() << " microseconds" << std::endl;
+    }    
 }

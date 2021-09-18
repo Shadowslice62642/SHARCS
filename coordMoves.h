@@ -11,11 +11,10 @@ uint8_t* (*corner_perm[18])(uint8_t[8], int);
 uint8_t* (*corner_ori[18])(uint8_t[8], int);
 
 //move tables
-//convert to malloc?
-uint32_t *ep_table = new uint32_t[3991680];
-uint16_t *eo_table = new uint16_t[12288];
-uint16_t *cp_table = new uint16_t[241920];
-uint16_t *co_table = new uint16_t[13122];
+uint32_t *ep_table;
+uint16_t *eo_table;
+uint16_t *cp_table;
+uint16_t *co_table;
 
 void make_ep_table(uint8_t* (*edge_perm[18])(uint8_t[12])) {
     uint8_t edges_p[12];
@@ -107,7 +106,7 @@ void make_co_table(uint8_t* (*corner_ori[18])(uint8_t[8], int)) {
     fwrite(co_table, 2, 13122, f);
 }
 
-void make_move_tables(){
+void make_move_tables(int moves, int moves_length){
     edge_perm[0] = &move_U_perm;
     edge_perm[1] = &move_D_perm;
     edge_perm[2] = &move_R_perm;
@@ -132,6 +131,10 @@ void make_move_tables(){
     corner_perm[3] = &move_L_perm;
     corner_perm[4] = &move_F_perm;
     corner_perm[5] = &move_B_perm;
+    ep_table = new uint32_t[665280*moves_length];
+    cp_table = new uint16_t[40320*moves_length];
+    eo_table = new uint16_t[2048*moves_length];
+    co_table = new uint16_t[2187*moves_length];
     FILE *f;
     f = fopen("ep_moves.table", "rb");
     if (f == NULL){

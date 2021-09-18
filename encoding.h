@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <cstring>
 
-//TODO: write partial perm
+//TODO: add permutation decoders?
 
 uint64_t encode_perm(uint8_t pieces, uint8_t slots, uint8_t *cubie_p) {
     //preprocessing (create partial permutation array)
@@ -82,13 +82,15 @@ uint64_t* encode_split_perm(uint8_t pieces, uint8_t slots, uint8_t break_point, 
         coord_p[0] *= slots-i-1; //partial factorial thingy
         seen += (1 << temp); //record new entry
     }
-    coord_p[0] /= slots-pieces; //correct for overmultiplication (12Px not 12P(x-1))
     for (int i = break_point; i < pieces; i++){
         temp = slots-partial_perm[i]-1;
-        coord_p[0] += partial_perm[i]-__builtin_popcount(seen >> temp); //pieces-partial_perm[i]-1
+        coord_p[1] += partial_perm[i]-__builtin_popcount(seen >> temp); //pieces-partial_perm[i]-1
         coord_p[0] *= slots-i-1; //partial factorial thingy
+        coord_p[1] *= slots-i-1; //partial factorial thingy
         seen += (1 << temp); //record new entry
     }
+    coord_p[0] /= slots-pieces; //correct for overmultiplication
+    coord_p[1] /= slots-pieces; //correct for overmultiplication
     return coord_p;
 }
 

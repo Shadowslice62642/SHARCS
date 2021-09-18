@@ -16,7 +16,7 @@ uint16_t *eo_table;
 uint16_t *cp_table;
 uint16_t *co_table;
 
-void make_ep_table(uint8_t* (*edge_perm[18])(uint8_t[12])) {
+void make_ep_table(uint8_t* (*edge_perm[18])(uint8_t[12]), int moves_length) {
     uint8_t edges_p[12];
     uint8_t edges_p_2[12];
     uint64_t temp = 0;
@@ -27,7 +27,7 @@ void make_ep_table(uint8_t* (*edge_perm[18])(uint8_t[12])) {
     for(uint64_t i = 0; i < 665280; i++){
         std::copy(&edges_p[0], &edges_p[12], &edges_p_2[0]);
         temp = 6*encode_perm(6, 12, edges_p);
-        for(int j = 0; j < 6; j++){
+        for(int j = 0; j < moves_length; j++){
             std::copy(&edges_p_2[0], &edges_p_2[12], &edges_p[0]);
             ep_table[temp+j] = encode_perm(6, 12, edge_perm[j](edges_p));
         }
@@ -49,7 +49,7 @@ void make_ep_table(uint8_t* (*edge_perm[18])(uint8_t[12])) {
     fwrite(ep_table, 4, 3991680, f);
 }
 
-void make_cp_table(uint8_t* (*corner_perm[18])(uint8_t[8], int)) {
+void make_cp_table(uint8_t* (*corner_perm[18])(uint8_t[8], int), int moves_length) {
     uint8_t corners_p[8];
     uint8_t corners_p_2[8];
     uint64_t temp = 0;
@@ -59,7 +59,7 @@ void make_cp_table(uint8_t* (*corner_perm[18])(uint8_t[8], int)) {
     for(uint64_t i = 0; i < 40320; i++){
         std::copy(&corners_p[0], &corners_p[8], &corners_p_2[0]);
         temp = 6*encode_perm(8, corners_p);
-        for(int j = 0; j < 6; j++){
+        for(int j = 0; j < moves_length; j++){
             std::copy(&corners_p_2[0], &corners_p_2[8], &corners_p[0]);
             cp_table[temp+j] = encode_perm(8, corner_perm[j](corners_p, 1));
         }
@@ -70,13 +70,13 @@ void make_cp_table(uint8_t* (*corner_perm[18])(uint8_t[8], int)) {
     fwrite(cp_table, 2, 241920, f);
 }
 
-void make_eo_table(uint8_t* (*edge_ori[18])(uint8_t[12])) {
+void make_eo_table(uint8_t* (*edge_ori[18])(uint8_t[12]), int moves_length) {
     uint8_t *edges_o = new uint8_t[12];
     uint8_t *edges_o_2 = new uint8_t[12];
     for(uint64_t i = 0; i < 12; i++){
         edges_o = decode_ori(2, 12, i);
         std::copy(&edges_o[0], &edges_o[12], &edges_o_2[0]);
-        for(int j = 0; j < 6; j++){
+        for(int j = 0; j < moves_length; j++){
             std::copy(&edges_o_2[0], &edges_o_2[12], &edges_o[0]);
             eo_table[6*i] = encode_ori(2, 12, edge_ori[j](edges_o));
         }
@@ -88,13 +88,13 @@ void make_eo_table(uint8_t* (*edge_ori[18])(uint8_t[12])) {
     fwrite(eo_table, 2, 12288, f);
 }
 
-void make_co_table(uint8_t* (*corner_ori[18])(uint8_t[8], int)) {
+void make_co_table(uint8_t* (*corner_ori[18])(uint8_t[8], int), int moves_length) {
     uint8_t *corners_o = new uint8_t[8];
     uint8_t *corners_o_2 = new uint8_t[8];
     for(uint64_t i = 0; i < 12; i++){
         std::copy(&corners_o[0], &corners_o[12], &corners_o_2[0]);
         corners_o = decode_ori(3, 8, i);
-        for(int j = 0; j < 6; j++){
+        for(int j = 0; j < moves_length; j++){
             std::copy(&corners_o_2[0], &corners_o_2[12], &corners_o[0]);
             co_table[6*i] = encode_ori(3, 8, corner_ori[j](corners_o, 1));
         }
@@ -139,7 +139,7 @@ void make_move_tables(int moves, int moves_length){
     f = fopen("ep_moves.table", "rb");
     if (f == NULL){
         std::cout << "Generating edge permutations..." << std::endl;
-        make_ep_table(edge_perm);
+        make_ep_table(edge_perm, moves_length);
     }
     else {
         std::cout << "Reading edge permutations from file..." << std::endl;
@@ -148,7 +148,7 @@ void make_move_tables(int moves, int moves_length){
     f = fopen("cp_moves.table", "rb");
     if (f == NULL){
         std::cout << "Generating corner permutations..." << std::endl;
-        make_cp_table(corner_perm);
+        make_cp_table(corner_perm, moves_length);
     }
     else {
         std::cout << "Reading corner permutations from file..." << std::endl;
@@ -157,7 +157,7 @@ void make_move_tables(int moves, int moves_length){
     f = fopen("eo_moves.table", "rb");
     if (f == NULL){
         std::cout << "Generating edge orientations..." << std::endl;
-        make_eo_table(edge_ori);
+        make_eo_table(edge_ori, moves_length);
     }
     else {
         std::cout << "Reading edge orientations from file..." << std::endl;
@@ -166,7 +166,7 @@ void make_move_tables(int moves, int moves_length){
     f = fopen("co_moves.table", "rb");
     if (f == NULL){
         std::cout << "Generating corner orientations..." << std::endl;
-        make_co_table(corner_ori);
+        make_co_table(corner_ori, moves_length);
     }
     else {
         std::cout << "Reading corner orientations from file..." << std::endl;

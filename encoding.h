@@ -38,7 +38,7 @@ uint64_t encode_perm(uint8_t slots, uint8_t *cubie_p) {
         coord_p *= slots-i-1; //partial factorial thingy
         seen += (1 << temp); //record new entry
     }
-    coord_p += cubie_p[slots]-__builtin_popcount(seen >> temp);
+    coord_p += cubie_p[slots-1]-__builtin_popcount(seen >> temp);
     return coord_p;
 }
 

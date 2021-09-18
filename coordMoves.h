@@ -30,7 +30,6 @@ void make_ep_table(edgePtr *ep, int moves_length) {
     for(uint64_t i = 0; i < 665280; i++){
         std::copy(&edges_p[0], &edges_p[12], &edges_p_2[0]);
         temp = 6*encode_perm(6, 12, edges_p);
-        //std::cout << "edge temp: " << temp << std::endl;
         for(int j = 0; j < moves_length; j++){
             std::copy(&edges_p_2[0], &edges_p_2[12], &edges_p[0]);
             ep_table[temp+j] = encode_perm(6, 12, ep[j](edges_p));
@@ -48,13 +47,12 @@ void make_ep_table(edgePtr *ep, int moves_length) {
             iteration++;
         }
     }
-    /*FILE *f;
+    FILE *f;
     f = fopen("ep_moves.table", "wb");
-    fwrite(ep_table, 4, 665280*moves_length, f);*/
+    fwrite(ep_table, 4, 665280*moves_length, f);
 }
 
 void make_cp_table(cornPtr *cp, int moves_length) {
-    std::cout << "hello" << std::endl;
     uint8_t corners_p[8];
     uint8_t corners_p_2[8];
     uint64_t temp = 0;
@@ -64,17 +62,12 @@ void make_cp_table(cornPtr *cp, int moves_length) {
     for(uint64_t i = 0; i < 40320; i++){
         std::copy(&corners_p[0], &corners_p[8], &corners_p_2[0]);
         temp = 6*encode_perm(8, corners_p);
-        for (int j = 0; j < 8; j++){
-            std::cout << (int)corners_p[j] << " ";
-        }
-        std::cout << "corner temp: " << temp << std::endl;
         for(int j = 0; j < moves_length; j++){
             std::copy(&corners_p_2[0], &corners_p_2[8], &corners_p[0]);
             cp_table[temp+j] = encode_perm(8, cp[j](corners_p, 1));
         }
         std::next_permutation(&corners_p[0], &corners_p[8]);
     }
-    std::cout << "hi" << std::endl;
     FILE *f;
     f = fopen("cp_moves.table", "wb");
     fwrite(cp_table, 2, 40320*moves_length, f);

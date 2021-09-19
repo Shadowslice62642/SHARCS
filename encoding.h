@@ -30,7 +30,6 @@
 
 uint64_t encode_perm(uint8_t pieces, uint8_t slots, uint8_t *cubie_p) {
     preprocessing(slots, pieces);
-    //calculation (find coordinate)
     uint64_t coord_p = 0;
     int seen = 0;
     uint64_t temp = 0;
@@ -41,7 +40,6 @@ uint64_t encode_perm(uint8_t pieces, uint8_t slots, uint8_t *cubie_p) {
 
 uint64_t encode_perm(uint8_t slots, uint8_t *cubie_p) {
     preprocessing(slots, slots)
-    //calculation (find coordinate)
     uint64_t coord_p = 0;
     int seen = 0;
     uint64_t temp = 0;\
@@ -62,15 +60,12 @@ uint64_t* encode_split_perm(uint8_t slots, uint8_t break_point, uint8_t *cubie_p
 }
 
 uint64_t* encode_split_perm(uint8_t pieces, uint8_t slots, uint8_t break_point, uint8_t *cubie_p) {
-    //preprocessing (create partial permutation array)
     preprocessing(slots, pieces)
-    //calculation (find coordinates)
     uint64_t coord_p[2];
     int seen = 0;
     uint64_t temp = 0;
     coord_calc(0, break_point, coord_p[0])
     coord_calc(break_point, pieces, coord_p[1])
-    coord_p[0] /= slots-pieces; //correct for overmultiplication
     coord_p[1] /= slots-pieces; //correct for overmultiplication
     return coord_p;
 }

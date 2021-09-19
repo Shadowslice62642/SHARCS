@@ -2,7 +2,7 @@
 #include <iostream>
 
 //corners_p
-    uint8_t* move_U_perm(uint8_t *corners_p, int a){ // U
+    uint8_t* move_U_perm_c(uint8_t *corners_p){ // U
         uint8_t x;
         x = corners_p[0];
         corners_p[0] = corners_p[3];
@@ -12,7 +12,7 @@
         return corners_p;
     }
 
-    uint8_t* move_L_perm(uint8_t *corners_p, int a){ // L
+    uint8_t* move_L_perm_c(uint8_t *corners_p){ // L
         uint8_t x;
         x = corners_p[0];
         corners_p[0] = corners_p[1];
@@ -22,7 +22,7 @@
         return corners_p;
     }
 
-    uint8_t* move_F_perm(uint8_t *corners_p, int a){ // F
+    uint8_t* move_F_perm_c(uint8_t *corners_p){ // F
         uint8_t x;
         x = corners_p[0];
         corners_p[0] = corners_p[5];
@@ -32,7 +32,7 @@
         return corners_p;
     }
 
-    uint8_t* move_R_perm(uint8_t *corners_p, int a){ // R
+    uint8_t* move_R_perm_c(uint8_t *corners_p){ // R
         uint8_t x;
         x = corners_p[2];
         corners_p[2] = corners_p[3];
@@ -42,7 +42,7 @@
         return corners_p;
     }
 
-    uint8_t* move_B_perm(uint8_t *corners_p, int a){ // B
+    uint8_t* move_B_perm_c(uint8_t *corners_p){ // B
         uint8_t x;
         x = corners_p[1];
         corners_p[1] = corners_p[2];
@@ -52,7 +52,7 @@
         return corners_p;
     }
 
-    uint8_t* move_D_perm(uint8_t *corners_p, int a){ // D
+    uint8_t* move_D_perm_c(uint8_t *corners_p){ // D
         uint8_t x;
         x = corners_p[4];
         corners_p[4] = corners_p[7];
@@ -63,7 +63,7 @@
     }
 
 //corners_o
-    uint8_t* move_U_ori(uint8_t *corners_o, int a){ // U
+    uint8_t* move_U_ori_c(uint8_t *corners_o){ // U
         uint8_t x;
         x = corners_o[0];
         corners_o[0] = corners_o[3];
@@ -73,7 +73,7 @@
         return corners_o;
     }
 
-    uint8_t* move_L_ori(uint8_t *corners_o, int a){ // L
+    uint8_t* move_L_ori_c(uint8_t *corners_o){ // L
         uint8_t x;
         x = corners_o[0];
         corners_o[0] = (corners_o[1]+1)%3;
@@ -83,7 +83,7 @@
         return corners_o;
     }
 
-    uint8_t* move_F_ori(uint8_t *corners_o, int a){ // F
+    uint8_t* move_F_ori_c(uint8_t *corners_o){ // F
         uint8_t x;
         x = corners_o[0];
         corners_o[0] = (corners_o[5]+2)%3;
@@ -93,7 +93,7 @@
         return corners_o;
     }
 
-    uint8_t* move_R_ori(uint8_t *corners_o, int a){ // R
+    uint8_t* move_R_ori_c(uint8_t *corners_o){ // R
         uint8_t x;
         x = corners_o[2];
         corners_o[2] = (corners_o[3]+1)%3;
@@ -103,7 +103,7 @@
         return corners_o;
     }
 
-    uint8_t* move_B_ori(uint8_t *corners_o, int a){ // B
+    uint8_t* move_B_ori_c(uint8_t *corners_o){ // B
         uint8_t x;
         x = corners_o[1];
         corners_o[1] = (corners_o[2]+1)%3;
@@ -113,7 +113,7 @@
         return corners_o;
     }
 
-    uint8_t* move_D_ori(uint8_t *corners_o, int a){ // D
+    uint8_t* move_D_ori_c(uint8_t *corners_o){ // D
         uint8_t x;
         x = corners_o[4];
         corners_o[4] = corners_o[7];

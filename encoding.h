@@ -33,7 +33,7 @@ uint64_t encode_perm(uint8_t pieces, uint8_t slots, uint8_t *cubie_p) {
     uint64_t coord_p = 0;
     int seen = 0;
     uint64_t temp = 0;
-    coord_calc(slots, pieces, coord_p)
+    coord_calc(0, pieces, coord_p)
     coord_p /= slots-pieces; //correct for overmultiplication (12Px not 12P(x-1))
     return coord_p;
 }
@@ -88,6 +88,7 @@ uint8_t* decode_ori(uint8_t ori_count, uint8_t slots, uint64_t coord_o){
     return cubie_o;
 }
 
+#if (dev == 1)
 void testing() {
     uint8_t cubie_ep[12];
     uint8_t iteration = 6;
@@ -127,5 +128,6 @@ void testing() {
     for (uint64_t i = 0; i < 665280; i++){
         hello += checked[i];
     }
-    std::cout << hello;
+    //std::cout << hello;
 }
+#endif

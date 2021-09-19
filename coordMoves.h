@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <chrono>
+#include <typeinfo>
 #include "cubieMoves.h"
 #include "encoding.h"
 
@@ -10,7 +11,7 @@
 //cubie move vectors
 //automate assignment?
 typedef uint8_t* (*edgePtr)(uint8_t*);
-typedef uint8_t* (*cornPtr)(uint8_t*, int);
+typedef uint8_t* (*cornPtr)(uint8_t*);
 
 edgePtr *edge_perm;
 edgePtr *edge_ori;
@@ -70,7 +71,7 @@ void make_cp_table(cornPtr *cp, int moves_length) {
         temp = 6*encode_perm(8, corners_p);
         for(int j = 0; j < moves_length; j++){
             std::copy(&corners_p_2[0], &corners_p_2[8], &corners_p[0]);
-            cp_table[temp+j] = encode_perm(8, cp[j](corners_p, 1));
+            cp_table[temp+j] = encode_perm(8, cp[j](corners_p));
         }
         std::next_permutation(&corners_p[0], &corners_p[8]);
     }
@@ -81,44 +82,37 @@ void make_cp_table(cornPtr *cp, int moves_length) {
     #endif
 }
 
-void make_eo_table(edgePtr *eo, int moves_length) {
-    uint8_t *edges_o = new uint8_t[12];
-    uint8_t *edges_o_2 = new uint8_t[12];
-    for(uint64_t i = 0; i < 12; i++){
-        edges_o = decode_ori(2, 12, i);
-        std::copy(&edges_o[0], &edges_o[12], &edges_o_2[0]);
+template <typename T>
+uint16_t* make_ori_table(T ori, int moves_length, uint64_t coord_count) {
+    int type_length;
+    int ori_count;
+    if(typeid(ori[0]) == typeid(edgePtr)){
+        type_length = 12;
+        ori_count = 2;
+    }
+    else {
+        type_length = 8;
+        ori_count = 3;
+    }
+    uint8_t *ori_array1 = new uint8_t[type_length];
+    uint8_t *ori_array2 = new uint8_t[type_length];
+    uint16_t *ori_table = new uint16_t[coord_count*moves_length];
+    for(uint64_t i = 0; i < coord_count; i++){
+        ori_array1 = decode_ori(ori_count, type_length, i);
+        std::copy(&ori_array1[0], &ori_array1[type_length], &ori_array2[0]);
         for(int j = 0; j < moves_length; j++){
-            std::copy(&edges_o_2[0], &edges_o_2[12], &edges_o[0]);
-            eo_table[6*i] = encode_ori(2, 12, eo[j](edges_o));
+            std::copy(&ori_array2[0], &ori_array2[type_length], &ori_array1[0]);
+            ori_table[6*i] = encode_ori(ori_count, type_length, ori[j](ori_array1));
         }
     }
-    delete edges_o;
-    delete edges_o_2;
+    delete ori_array1;
+    delete ori_array2;
     #if (dev != 1)
     FILE *f;
     f = fopen("eo_moves.table", "wb");
     fwrite(eo_table, 2, 2048*moves_length, f);
     #endif
-}
-
-void make_co_table(cornPtr *co, int moves_length) {
-    uint8_t *corners_o = new uint8_t[8];
-    uint8_t *corners_o_2 = new uint8_t[8];
-    for(uint64_t i = 0; i < 12; i++){
-        std::copy(&corners_o[0], &corners_o[12], &corners_o_2[0]);
-        corners_o = decode_ori(3, 8, i);
-        for(int j = 0; j < moves_length; j++){
-            std::copy(&corners_o_2[0], &corners_o_2[12], &corners_o[0]);
-            co_table[6*i] = encode_ori(3, 8, co[j](corners_o, 1));
-        }
-    }
-    delete corners_o;
-    delete corners_o_2;
-    #if (dev != 1)
-    FILE *f;
-    f = fopen("co_moves.table", "wb");
-    fwrite(co_table, 2, 2187*moves_length, f);
-    #endif
+    return ori_table;
 }
 
 void make_move_tables(int moves, int moves_length){
@@ -133,18 +127,18 @@ void make_move_tables(int moves, int moves_length){
     edge_perm[3] = &move_L_perm;
     edge_perm[4] = &move_F_perm;
     edge_perm[5] = &move_B_perm;
-    corner_perm[0] = &move_U_perm;
-    corner_perm[1] = &move_D_perm;
-    corner_perm[2] = &move_R_perm;
-    corner_perm[3] = &move_L_perm;
-    corner_perm[4] = &move_F_perm;
-    corner_perm[5] = &move_B_perm;
-    corner_ori[0] = &move_U_ori;
-    corner_ori[1] = &move_D_ori;
-    corner_ori[2] = &move_R_ori;
-    corner_ori[3] = &move_L_ori;
-    corner_ori[4] = &move_F_ori;
-    corner_ori[5] = &move_B_ori;
+    corner_perm[0] = &move_U_perm_c;
+    corner_perm[1] = &move_D_perm_c;
+    corner_perm[2] = &move_R_perm_c;
+    corner_perm[3] = &move_L_perm_c;
+    corner_perm[4] = &move_F_perm_c;
+    corner_perm[5] = &move_B_perm_c;
+    corner_ori[0] = &move_U_ori_c;
+    corner_ori[1] = &move_D_ori_c;
+    corner_ori[2] = &move_R_ori_c;
+    corner_ori[3] = &move_L_ori_c;
+    corner_ori[4] = &move_F_ori_c;
+    corner_ori[5] = &move_B_ori_c;
     edge_ori[0] = &move_U_ori;
     edge_ori[1] = &move_D_ori;
     edge_ori[2] = &move_R_ori;
@@ -177,7 +171,7 @@ void make_move_tables(int moves, int moves_length){
     f = fopen("eo_moves.table", "rb");
     if (f == NULL){
         std::cout << "Generating edge orientations..." << std::endl;
-        make_eo_table(edge_ori, moves_length);
+        eo_table = make_ori_table(edge_ori, moves_length, 2048);
     }
     else {
         std::cout << "Reading edge orientations from file..." << std::endl;
@@ -186,7 +180,7 @@ void make_move_tables(int moves, int moves_length){
     f = fopen("co_moves.table", "rb");
     if (f == NULL){
         std::cout << "Generating corner orientations..." << std::endl;
-        make_co_table(corner_ori, moves_length);
+        co_table = make_ori_table(corner_ori, moves_length, 2187);
     }
     else {
         std::cout << "Reading corner orientations from file..." << std::endl;

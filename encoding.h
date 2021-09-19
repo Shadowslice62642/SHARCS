@@ -3,93 +3,73 @@
 #include <algorithm>
 #include <cstring>
 
-//TODO: add permutation decoders?
+//TODO: Add permutation decoder?
+
+#define preprocessing(slots, pieces) \
+    uint8_t partial_perm[12]; \
+    for (int i = 0; i < slots; i++){\
+        if(cubie_p[i] < pieces){ \
+            partial_perm[cubie_p[i]] = i;\
+        } \
+    }\
+
+#define coord_calc(iter_start, iter_end, coord_p) \
+    for (int i = iter_start; i < iter_end; i++) {\
+        temp = slots-partial_perm[i]-1;\
+        coord_p += partial_perm[i]-__builtin_popcount(seen >> temp);\
+        coord_p *= slots-i-1;\
+        seen += (1 << temp);\
+    }
+
+    /*for (int i = 0; i < pieces; i++) {\
+        temp = slots-partial_perm[i]-1;\
+        coord_p += partial_perm[i]-__builtin_popcount(seen >> temp);\ //pieces-partial_perm[i]-1
+        coord_p *= slots-i-1; \//partial factorial thingy
+        seen += (1 << temp); \//record new entry
+    }*/
 
 uint64_t encode_perm(uint8_t pieces, uint8_t slots, uint8_t *cubie_p) {
-    //preprocessing (create partial permutation array)
-    uint8_t partial_perm[12];
-    for (int i = 0; i < slots; i++){
-        if(cubie_p[i] < pieces){
-            partial_perm[cubie_p[i]] = i;
-        }
-    }
+    preprocessing(slots, pieces);
     //calculation (find coordinate)
     uint64_t coord_p = 0;
     int seen = 0;
-    uint8_t temp = 0;
-    for (int i = 0; i < pieces; i++) {
-        temp = slots-partial_perm[i]-1;
-        coord_p += partial_perm[i]-__builtin_popcount(seen >> temp); //pieces-partial_perm[i]-1
-        coord_p *= slots-i-1; //partial factorial thingy
-        seen += (1 << temp); //record new entry
-        //std::cout << coord_p << std::endl;
-    }
+    uint64_t temp = 0;
+    coord_calc(slots, pieces, coord_p)
     coord_p /= slots-pieces; //correct for overmultiplication (12Px not 12P(x-1))
     return coord_p;
 }
 
 uint64_t encode_perm(uint8_t slots, uint8_t *cubie_p) {
+    preprocessing(slots, slots)
     //calculation (find coordinate)
     uint64_t coord_p = 0;
     int seen = 0;
-    uint8_t temp = 0;
-    for (int i = 0; i < slots-1; i++) {
-        temp = slots-cubie_p[i]-1;
-        coord_p += cubie_p[i]-__builtin_popcount(seen >> temp); //pieces-partial_perm[i]-1
-        coord_p *= slots-i-1; //partial factorial thingy
-        seen += (1 << temp); //record new entry
-    }
+    uint64_t temp = 0;\
+    coord_calc(slots, slots-1, coord_p)
     coord_p += cubie_p[slots-1]-__builtin_popcount(seen >> temp);
     return coord_p;
 }
 
 uint64_t* encode_split_perm(uint8_t slots, uint8_t break_point, uint8_t *cubie_p){
-    //calculation (find coordinates)
+    preprocessing(slots, slots)
     uint64_t coord_p[2];
     int seen = 0;
-    uint8_t temp = 0;
-    for (int i = 0; i < slots; i++) {
-        if (cubie_p[i] < break_point){
-            temp = slots-cubie_p[i]-1;
-            coord_p[0] += cubie_p[i]-__builtin_popcount(seen >> temp); //pieces-partial_perm[i]-1
-        }
-        else {
-            temp = slots-cubie_p[i]-1;
-            coord_p[1] += cubie_p[i]-__builtin_popcount(seen >> temp); //pieces-partial_perm[i]-1
-        }
-        coord_p[0] *= slots-i-1; //partial factorial thingy
-        coord_p[1] *= slots-i-1; //partial factorial thingy
-        seen += (1 << temp); //record new entry
-        //std::cout << coord_ep << std::endl;
-    }
+    uint64_t temp = 0;
+    coord_calc(0, break_point, coord_p[0])
+    coord_calc(break_point, slots-1, coord_p[1])
+    coord_p[1] += cubie_p[slots-1]-__builtin_popcount(seen >> temp);
     return coord_p;
 }
 
 uint64_t* encode_split_perm(uint8_t pieces, uint8_t slots, uint8_t break_point, uint8_t *cubie_p) {
     //preprocessing (create partial permutation array)
-    uint8_t partial_perm[12];
-    for (int i = 0; i < slots; i++){
-        if(cubie_p[i] < pieces){
-            partial_perm[cubie_p[i]] = i;
-        }
-    }
+    preprocessing(slots, pieces)
     //calculation (find coordinates)
     uint64_t coord_p[2];
     int seen = 0;
-    uint8_t temp = 0;
-    for (int i = 0; i < break_point; i++) {
-        temp = slots-partial_perm[i]-1;
-        coord_p[0] += partial_perm[i]-__builtin_popcount(seen >> temp); //pieces-partial_perm[i]-1
-        coord_p[0] *= slots-i-1; //partial factorial thingy
-        seen += (1 << temp); //record new entry
-    }
-    for (int i = break_point; i < pieces; i++){
-        temp = slots-partial_perm[i]-1;
-        coord_p[1] += partial_perm[i]-__builtin_popcount(seen >> temp); //pieces-partial_perm[i]-1
-        coord_p[0] *= slots-i-1; //partial factorial thingy
-        coord_p[1] *= slots-i-1; //partial factorial thingy
-        seen += (1 << temp); //record new entry
-    }
+    uint64_t temp = 0;
+    coord_calc(0, break_point, coord_p[0])
+    coord_calc(break_point, pieces, coord_p[1])
     coord_p[0] /= slots-pieces; //correct for overmultiplication
     coord_p[1] /= slots-pieces; //correct for overmultiplication
     return coord_p;

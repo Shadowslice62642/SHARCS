@@ -42,7 +42,7 @@ uint64_t encode_perm(uint8_t slots, uint8_t *cubie_p) {
     preprocessing(slots, slots)
     uint64_t coord_p = 0;
     int seen = 0;
-    uint64_t temp = 0;\
+    uint64_t temp = 0;
     coord_calc(slots, slots-1, coord_p)
     coord_p += cubie_p[slots-1]-__builtin_popcount(seen >> temp);
     return coord_p;
